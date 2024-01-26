@@ -2,10 +2,6 @@
 // !!! - Make sure to Disable cache in Chrome Dev Tools - !!!
 
 const express = require('express');
-const cluster = require('cluster');
-const os = require('os');
-
-cluster.schedulingPolicy = cluster.SCHED_RR; // Forces Round Robin scheduling on Windows
 
 const app = express();
 
@@ -26,14 +22,6 @@ app.get('/timer', (req, res) => {
 });
 
 console.log('Running server.js...');
-if (cluster.isPrimary) {
-    console.log(`Master has been started with pid ${process.pid}`);
-    const NUM_WORKERS = os.cpus().length;
-    for (let i = 0; i < NUM_WORKERS; i++) {
-        cluster.fork();
-    }
-} else {
-    console.log(`Worker process started with pid ${process.pid}`);
-    app.listen(3000);
-}
+console.log(`Worker process started with pid ${process.pid}`);
+app.listen(3000);
 
