@@ -1,6 +1,7 @@
 // Building A Simple Blocking Server
 
 const express = require('express');
+const cluster = require('cluster');
 
 const app = express();
 
@@ -20,4 +21,12 @@ app.get('/timer', (req, res) => {
     res.send('Ding ding ding!');
 });
 
-app.listen(3000);
+if (cluster.isMaster) {
+    console.log(`Master has been started with pid ${process.pid}`);
+    cluster.fork();
+    cluster.fork();
+} else {
+    console.log(`Worker process started with pid ${process.pid}`);
+    app.listen(3000);
+}
+
